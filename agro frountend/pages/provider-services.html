@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Services – AgroTECH Provider</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/home.css">
+  <style>
+    .services-layout {
+      max-width: 1080px;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+    }
+
+    .services-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .service-search-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .service-list-card {
+      background: white;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--green-100);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      transition: all 0.25s ease;
+      margin-bottom: 1.25rem;
+      position: relative;
+    }
+
+    .service-list-card:hover {
+      box-shadow: 0 8px 24px rgba(46,125,50,0.12);
+      transform: translateY(-2px);
+      border-color: var(--green-300);
+    }
+
+    .service-list-card.card-paused {
+      background: #fafaf9;
+      border-color: #e2e8f0;
+      opacity: 0.9;
+    }
+
+    .service-list-img-wrap {
+      width: 210px;
+      min-height: 160px;
+      position: relative;
+      flex-shrink: 0;
+      background: #f1f5f9;
+      overflow: hidden;
+    }
+
+    .service-card-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .service-list-card:hover .service-card-image {
+      transform: scale(1.05);
+    }
+
+    .service-category-badge {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .service-list-body {
+      padding: 1.25rem 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .service-list-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .service-list-name {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--gray-900);
+      margin: 0 0 6px;
+      line-height: 1.35;
+    }
+
+    .service-list-desc {
+      font-size: 0.88rem;
+      color: var(--gray-600);
+      line-height: 1.5;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .service-price-box {
+      text-align: right;
+      flex-shrink: 0;
+      background: #f0fdf4;
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid #bbf7d0;
+    }
+
+    .service-list-price {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--green-700);
+      line-height: 1.1;
+    }
+
+    .service-price-unit {
+      font-size: 0.78rem;
+      color: var(--green-800);
+      font-weight: 600;
+    }
+
+    .service-list-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 10px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .service-list-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .service-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f8fafc;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--gray-300);
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: white;
+      left: 3px;
+      top: 3px;
+      transition: var(--transition);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    .toggle-switch input:checked + .toggle-slider { background: var(--green-500); }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    @media(max-width:600px) { .stats-bar { grid-template-columns: 1fr; } }
+
+    .stat-mini {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      text-align: center;
+      border: 1px solid var(--green-100);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .stat-mini-num {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--green-700);
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+
+    .stat-mini-label { font-size: 0.75rem; color: var(--gray-500); }
+
+    @media (max-width: 768px) {
+      .service-list-card {
+        flex-direction: column;
+      }
+      .service-list-img-wrap {
+        width: 100%;
+        height: 180px;
+      }
+      .service-list-top {
+        flex-direction: column;
+      }
+      .service-price-box {
+        text-align: left;
+        align-self: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar"></nav>
+
+  <!-- Hero Header -->
+  <div class="page-header">
+    <div class="farmer-dash-inner">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:1rem">
+        <div class="breadcrumb" style="padding:0;color:rgba(255,255,255,0.7)">
+          <a href="provider-dashboard.html" style="color:rgba(255,255,255,0.7)" data-i18n="nav.provider_dashboard">Dashboard</a>
+          <span>/</span>
+          <span style="color:white" data-i18n="my_services.title">My Services</span>
+        </div>
+
+        <div class="lang-dual-toggle">
+          <button type="button" class="lang-dual-btn lang-dual-en active" onclick="AgroI18n.setLanguage('en')">🇬🇧 English</button>
+          <button type="button" class="lang-dual-btn lang-dual-hi" onclick="AgroI18n.setLanguage('hi')">🇮🇳 हिंदी</button>
+        </div>
+      </div>
+
+      <h1 style="font-size:clamp(1.6rem, 3vw, 2.2rem);color:white;font-weight:800;margin-bottom:4px" data-i18n="my_services.title">
+        🚜 My Services & Equipment
+      </h1>
+      <p style="color:rgba(255,255,255,0.85);font-size:0.92rem" data-i18n="my_services.subtitle">
+        Manage your listed equipment, rental rates, and real-time availability.
+      </p>
+    </div>
+  </div>
+
+  <div class="services-layout">
+
+    <!-- Stats bar -->
+    <div class="stats-bar">
+      <div class="stat-mini">
+        <div class="stat-mini-num" id="statTotal">0</div>
+        <div class="stat-mini-label" data-i18n="provider.stat_total_services">Total Services</div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-num" id="statActive" style="color:#15803d">0</div>
+        <div class="stat-mini-label" data-i18n="my_services.active">Active (Available)</div>
+      </div>
+      <div class="stat-mini">
+        <div class="stat-mini-num" id="statInactive" style="color:#b45309">0</div>
+        <div class="stat-mini-label" data-i18n="my_services.inactive">Inactive (Paused)</div>
+      </div>
+    </div>
+
+    <div class="services-header">
+      <div>
+        <h2 style="font-size:1.3rem;color:var(--green-900);font-weight:800;margin:0 0 4px" data-i18n="my_services.title">
+          🚜 Your Equipment & Service Listings
+        </h2>
+        <p style="color:var(--gray-500);font-size:0.86rem;margin:0">
+          View, pause, edit rates, and manage availability of all listed machinery and products.
+        </p>
+      </div>
+      <a href="provider-add-service.html" class="btn btn-primary" style="border-radius:24px;padding:9px 20px;font-weight:700;box-shadow:0 4px 14px rgba(22,163,74,0.25)" data-i18n="my_services.add_btn">
+        ➕ Add New Service
+      </a>
+    </div>
+
+    <!-- Search & Results Count Toolbar -->
+    <div class="service-search-bar">
+      <div style="position:relative;flex:1;min-width:240px">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem;color:var(--gray-400)">🔍</span>
+        <input type="text" id="serviceSearchInput" class="form-input" style="padding-left:42px;border-radius:24px;background:white;border:1.5px solid var(--green-200);height:44px" placeholder="Search equipment by name, Product ID (#1), category, or location..." oninput="handleSearch()">
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span id="showingCountBadge" style="font-size:0.85rem;color:var(--green-900);background:#dcfce7;border:1px solid #86efac;padding:8px 16px;border-radius:20px;font-weight:700">
+          Showing 0 listings
+        </span>
+      </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs" id="filterTabs" style="margin-bottom:1.5rem;overflow-x:auto;padding-bottom:4px;gap:8px">
+      <button class="filter-tab active" onclick="filterServices('all', this)">🌐 All (<span id="tabCountAll">0</span>)</button>
+      <button class="filter-tab" onclick="filterServices('active', this)">✅ Active (<span id="tabCountActive">0</span>)</button>
+      <button class="filter-tab" onclick="filterServices('inactive', this)">⏸ Inactive (<span id="tabCountInactive">0</span>)</button>
+      <button class="filter-tab" onclick="filterServices('machinery', this)">🚜 Machinery</button>
+      <button class="filter-tab" onclick="filterServices('irrigation', this)">💧 Irrigation</button>
+      <button class="filter-tab" onclick="filterServices('fertilizer', this)">🌿 Fertilizer</button>
+      <button class="filter-tab" onclick="filterServices('seeds', this)">🌱 Seeds</button>
+      <button class="filter-tab" onclick="filterServices('transport', this)">🚛 Transport</button>
+    </div>
+
+    <div id="serviceList"></div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div class="agro-modal-backdrop" id="editModal">
+    <div class="agro-modal-dialog">
+      <div class="agro-modal-header">
+        <h3 style="color:var(--green-900);font-size:1.15rem;margin:0" data-i18n="my_services.edit_modal_title">
+          ✏️ Edit Service Details
+        </h3>
+        <button class="agro-modal-close" onclick="closeEdit()">✕</button>
+      </div>
+      <input type="hidden" id="editId">
+
+      <div class="form-group">
+        <label class="form-label" data-i18n="add_service.name_label">Service Name *</label>
+        <input type="text" id="editName" class="form-input" placeholder="e.g. Mahindra Tractor Rental">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-group">
+          <label class="form-label" data-i18n="add_service.category_label">Category *</label>
+          <select id="editCat" class="form-select">
+            <option value="machinery">🚜 Machinery</option>
+            <option value="fertilizer">🌿 Fertilizer</option>
+            <option value="irrigation">💧 Irrigation</option>
+            <option value="transport">🚛 Transport</option>
+            <option value="seeds">🌱 Seeds</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="add_service.price_label">Price (₹) *</label>
+          <input type="number" id="editPrice" class="form-input" placeholder="0">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="form-group">
+          <label class="form-label" data-i18n="add_service.unit_label">Price Unit</label>
+          <select id="editUnit" class="form-select">
+            <option value="per day">Per Day</option>
+            <option value="per acre">Per Acre</option>
+            <option value="per kg">Per KG</option>
+            <option value="per bag">Per Bag</option>
+            <option value="per trip">Per Trip</option>
+            <option value="per kit">Per Kit</option>
+            <option value="per hour">Per Hour</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="add_service.location_label">Location</label>
+          <input type="text" id="editLocation" class="form-input" placeholder="Town, District">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-i18n="add_service.description_label">Description *</label>
+        <textarea id="editDesc" class="form-textarea" rows="3" placeholder="Describe your service..."></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button class="btn btn-primary" style="flex:1" onclick="saveEdit()" id="saveEditBtn" data-i18n="my_services.save_changes">
+          💾 Save Changes
+        </button>
+        <button class="btn btn-secondary" onclick="closeEdit()" data-i18n="my_services.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm Dialog -->
+  <div class="agro-modal-backdrop" id="confirmOverlay">
+    <div class="agro-modal-dialog" style="max-width:400px;text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem">🗑️</div>
+      <h3 style="color:var(--gray-900);margin-bottom:0.5rem" data-i18n="my_services.delete_confirm_title">Delete this service listing?</h3>
+      <p style="font-size:0.875rem;color:var(--gray-500);margin-bottom:1.5rem" data-i18n="my_services.delete_confirm_desc">
+        This action cannot be undone. The service will be permanently removed.
+      </p>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button class="btn btn-danger" onclick="confirmDelete()" data-i18n="my_services.yes_delete">Yes, Delete</button>
+        <button class="btn btn-secondary" onclick="closeConfirm()" data-i18n="my_services.cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 AgroTECH • Provider Partner Portal</p>
+  </footer>
+
+  <div id="global-toast" class="toast"></div>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/global.js"></script>
+  <script>
+    let services = [];
+    let deleteTargetId = null;
+    let currentFilter = 'all';
+    let searchQuery = '';
+
+    const CATEGORY_FALLBACK_IMAGES = {
+      machinery: 'https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=600&q=80',
+      irrigation: 'https://images.unsplash.com/photo-1563514227147-6d2ff665a6a0?w=600&q=80',
+      fertilizer: 'https://images.unsplash.com/photo-1585314062340-f1a5a7c9328d?w=600&q=80',
+      seeds: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=600&q=80',
+      transport: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=600&q=80'
+    };
+
+    function getFallbackImage(cat = '') {
+      return CATEGORY_FALLBACK_IMAGES[(cat || '').toLowerCase()] || 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=600&q=80';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!requireRole(['provider', 'seller'])) return;
+      renderNavbar('services');
+      loadServices();
+    });
+
+    async function loadServices() {
+      const el = document.getElementById('serviceList');
+      if (el) {
+        el.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--gray-500)"><span style="font-size:1.8rem">🚜</span><br><b style="color:var(--green-900);font-size:1rem;margin-top:6px;display:inline-block">Loading your equipment & service listings...</b></div>';
+      }
+
+      try {
+        const data = await apiGetMyServices();
+        services = (data && Array.isArray(data.services)) ? data.services : [];
+        if (services.length === 0 && typeof LocalStorageDB !== 'undefined') {
+          services = LocalStorageDB.getServices();
+        }
+        updateStats();
+        applyFilters();
+      } catch(e) {
+        if (typeof LocalStorageDB !== 'undefined') {
+          services = LocalStorageDB.getServices();
+          updateStats();
+          applyFilters();
+        } else {
+          showToast(e.message || 'Failed to load listings', 'error');
+          renderServices([]);
+        }
+      }
+    }
+
+    function updateStats() {
+      const total = services.length;
+      const active = services.filter(s => s.available !== false).length;
+      const inactive = total - active;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statActive').textContent = active;
+      document.getElementById('statInactive').textContent = inactive;
+
+      const tabAll = document.getElementById('tabCountAll');
+      if (tabAll) tabAll.textContent = total;
+      const tabAct = document.getElementById('tabCountActive');
+      if (tabAct) tabAct.textContent = active;
+      const tabInact = document.getElementById('tabCountInactive');
+      if (tabInact) tabInact.textContent = inactive;
+    }
+
+    function handleSearch() {
+      searchQuery = (document.getElementById('serviceSearchInput')?.value || '').trim().toLowerCase();
+      applyFilters();
+    }
+
+    function filterServices(type, btn) {
+      currentFilter = type;
+      document.querySelectorAll('#filterTabs .filter-tab').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      applyFilters();
+    }
+
+    function applyFilters() {
+      let filtered = [...services];
+
+      // Tab filter
+      if (currentFilter === 'active') {
+        filtered = filtered.filter(s => s.available !== false);
+      } else if (currentFilter === 'inactive') {
+        filtered = filtered.filter(s => s.available === false);
+      } else if (currentFilter !== 'all') {
+        filtered = filtered.filter(s => (s.category || '').toLowerCase() === currentFilter.toLowerCase());
+      }
+
+      // Search query filter
+      if (searchQuery) {
+        filtered = filtered.filter(s => {
+          const id = String(s.id || '').toLowerCase();
+          const name = (s.name || '').toLowerCase();
+          const desc = (s.description || '').toLowerCase();
+          const loc = (s.location || '').toLowerCase();
+          const cat = (s.category || '').toLowerCase();
+          return id === searchQuery || id.includes(searchQuery) || (`#${id}`).includes(searchQuery) || (`id: #${id}`).includes(searchQuery) || name.includes(searchQuery) || desc.includes(searchQuery) || loc.includes(searchQuery) || cat.includes(searchQuery);
+        });
+      }
+
+      // Update count badge
+      const badge = document.getElementById('showingCountBadge');
+      if (badge) {
+        badge.textContent = `Showing ${filtered.length} of ${services.length} listings`;
+      }
+
+      renderServices(filtered);
+    }
+
+    function renderServices(list) {
+      const el = document.getElementById('serviceList');
+      if (!el) return;
+
+      if (list.length === 0) {
+        el.innerHTML = `
+          <div class="empty-state" style="background:white;padding:3rem 1.5rem;border-radius:var(--radius-xl);text-align:center;border:1.5px dashed var(--green-200);box-shadow:var(--shadow-sm)">
+            <div style="font-size:3rem;margin-bottom:0.75rem">🚜</div>
+            <h3 style="color:var(--gray-800);margin-bottom:0.5rem;font-size:1.25rem">${searchQuery ? 'No matching listings found' : 'No service listings found'}</h3>
+            <p style="color:var(--gray-500);max-width:440px;margin:0 auto 1.25rem;font-size:0.9rem;line-height:1.5">
+              ${searchQuery ? 'Try clearing your search query or switching to another category tab.' : 'You have not listed any farm equipment or products yet. Add your first service to start getting booking requests from local farmers!'}
+            </p>
+            ${searchQuery 
+              ? `<button class="btn btn-secondary" onclick="clearFilters()" style="border-radius:24px;padding:8px 20px;font-weight:700">🔄 Clear Search & Show All</button>`
+              : `<a href="provider-add-service.html" class="btn btn-primary" style="border-radius:24px;padding:10px 24px;font-weight:700;box-shadow:0 4px 14px rgba(22,163,74,0.3)">➕ Add First Service</a>`
+            }
+          </div>`;
+        return;
+      }
+
+      el.innerHTML = list.map(s => {
+        const isActive = s.available !== false;
+        const cat = (s.category || 'other').toLowerCase();
+        const catIcon = getCategoryIcon(cat);
+        const fallbackImg = getFallbackImage(cat);
+        const imgSrc = (s.image && s.image.trim().length > 10) ? s.image : fallbackImg;
+
+        return `
+          <div class="service-list-card animate-fade-up ${!isActive ? 'card-paused' : ''}" id="scard-${s.id}">
+            <div class="service-list-img-wrap">
+              <img src="${imgSrc}" alt="${s.name}" class="service-card-image"
+                   onerror="this.onerror=null;this.src='${fallbackImg}';" loading="lazy">
+              <span class="service-category-badge">${catIcon} ${cat}</span>
+            </div>
+            <div class="service-list-body">
+              <div class="service-list-top">
+                <div style="flex:1">
+                  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px">
+                    <span style="background:#e0f2fe;color:#0284c7;border:1px solid #bae6fd;font-size:0.75rem;font-weight:800;padding:2px 8px;border-radius:8px">
+                      ID: #${s.id}
+                    </span>
+                    <span class="badge ${isActive ? 'badge-success' : 'badge-warning'}" style="font-size:0.75rem;padding:3px 10px;border-radius:12px;font-weight:700">
+                      ${isActive ? '● Active & Booking Open' : '⏸ Paused (Unavailable)'}
+                    </span>
+                    <span style="font-size:0.8rem;color:var(--gray-500);display:inline-flex;align-items:center;gap:4px">
+                      📍 ${s.location || 'Local Area'}
+                    </span>
+                    <span style="font-size:0.8rem;color:#f59e0b;font-weight:700">
+                      ★ ${s.rating || 4.8} <small style="color:var(--gray-400)">(${s.reviews || 24})</small>
+                    </span>
+                  </div>
+                  <h3 class="service-list-name" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <span>${s.name}</span>
+                    <span style="font-size:0.75rem;background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;padding:2px 8px;border-radius:6px;font-weight:800">
+                      Product ID: #${s.id}
+                    </span>
+                  </h3>
+                  <p class="service-list-desc">${s.description || 'Verified agricultural equipment & service with professional operational support.'}</p>
+                </div>
+                <div class="service-price-box">
+                  <div class="service-list-price">${formatPrice(s.price)}</div>
+                  <div class="service-price-unit">/ ${s.unit || 'per day'}</div>
+                </div>
+              </div>
+
+              <div class="service-list-meta">
+                <div class="service-list-tags">
+                  <span style="font-size:0.82rem;font-weight:600;color:${isActive ? '#15803d' : '#94a3b8'};display:inline-flex;align-items:center;gap:6px">
+                    ${isActive ? '🟢 Visible to farmers in search results' : '⚪ Hidden from farmer booking catalog'}
+                  </span>
+                </div>
+                <div class="service-actions">
+                  <div class="toggle-wrap" title="${isActive ? 'Click to Pause Listing' : 'Click to Activate Listing'}">
+                    <span style="font-size:0.78rem;font-weight:700;color:${isActive ? '#15803d' : '#94a3b8'}">
+                      ${isActive ? 'Active' : 'Paused'}
+                    </span>
+                    <label class="toggle-switch">
+                      <input type="checkbox" ${isActive ? 'checked' : ''} onchange="toggleAvailability(${s.id}, this.checked)">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                  <button class="btn btn-secondary btn-sm" onclick="openEdit(${s.id})" title="Edit Listing Details" style="border-radius:10px;padding:6px 14px;font-weight:600">
+                    ✏️ Edit
+                  </button>
+                  <button class="btn btn-danger btn-sm" onclick="openConfirm(${s.id})" title="Delete Listing" style="border-radius:10px;padding:6px 12px">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearFilters() {
+      searchQuery = '';
+      currentFilter = 'all';
+      const searchInput = document.getElementById('serviceSearchInput');
+      if (searchInput) searchInput.value = '';
+      document.querySelectorAll('#filterTabs .filter-tab').forEach(b => b.classList.remove('active'));
+      const firstTab = document.querySelector('#filterTabs .filter-tab');
+      if (firstTab) firstTab.classList.add('active');
+      applyFilters();
+    }
+
+    async function toggleAvailability(id, checked) {
+      try {
+        const idx = services.findIndex(s => Number(s.id) === Number(id));
+        if (idx !== -1) services[idx].available = checked;
+        updateStats();
+        applyFilters();
+
+        await apiToggleServiceStatus(id, checked ? 'active' : 'inactive');
+        showToast(checked ? 'Listing is now Active & visible to farmers ✅' : 'Listing is now Paused ⏸', 'info');
+      } catch(e) {
+        showToast(e.message || 'Status update failed', 'error');
+      }
+    }
+
+    function openEdit(id) {
+      const s = services.find(x => Number(x.id) === Number(id));
+      if (!s) return;
+      document.getElementById('editId').value = s.id;
+      document.getElementById('editName').value = s.name;
+      document.getElementById('editCat').value = s.category || 'machinery';
+      document.getElementById('editPrice').value = s.price;
+      document.getElementById('editUnit').value = s.unit || 'per day';
+      document.getElementById('editLocation').value = s.location || '';
+      document.getElementById('editDesc').value = s.description || '';
+      document.getElementById('editModal').classList.add('show');
+    }
+
+    function closeEdit() {
+      document.getElementById('editModal').classList.remove('show');
+    }
+
+    async function saveEdit() {
+      const id = Number(document.getElementById('editId').value);
+      const service = services.find(x => Number(x.id) === id);
+      if (!service) return;
+
+      const payload = {
+        name: document.getElementById('editName').value.trim(),
+        category: document.getElementById('editCat').value,
+        price: Number(document.getElementById('editPrice').value),
+        unit: document.getElementById('editUnit').value,
+        location: document.getElementById('editLocation').value.trim(),
+        description: document.getElementById('editDesc').value.trim(),
+        image: service.image || '',
+        available: service.available !== false
+      };
+
+      if (!payload.name) {
+        showToast('Service name is required', 'error');
+        return;
+      }
+      if (!payload.price || payload.price <= 0) {
+        showToast('Valid price is required', 'error');
+        return;
+      }
+
+      try {
+        const updated = await apiUpdateService(id, payload);
+        const resolved = (updated && updated.service) ? updated.service : (updated && updated.id) ? updated : { ...service, ...payload };
+        services = services.map(x => Number(x.id) === id ? resolved : x);
+        closeEdit();
+        updateStats();
+        applyFilters();
+        showToast('Service updated successfully. ✅', 'success');
+      } catch(e) {
+        // Optimistic local update
+        services = services.map(x => Number(x.id) === id ? { ...x, ...payload } : x);
+        closeEdit();
+        updateStats();
+        applyFilters();
+        showToast('Service updated locally. ✅', 'success');
+      }
+    }
+
+    function openConfirm(id) {
+      deleteTargetId = id;
+      document.getElementById('confirmOverlay').classList.add('show');
+    }
+
+    function closeConfirm() {
+      deleteTargetId = null;
+      document.getElementById('confirmOverlay').classList.remove('show');
+    }
+
+    async function confirmDelete() {
+      if (deleteTargetId === null) return;
+      try {
+        await apiDeleteService(deleteTargetId);
+        services = services.filter(x => Number(x.id) !== Number(deleteTargetId));
+        closeConfirm();
+        updateStats();
+        applyFilters();
+        showToast('Service listing deleted. 🗑️', 'info');
+      } catch(e) {
+        // Optimistic delete
+        services = services.filter(x => Number(x.id) !== Number(deleteTargetId));
+        closeConfirm();
+        updateStats();
+        applyFilters();
+        showToast('Service listing removed. 🗑️', 'info');
+      }
+    }
+  </script>
+</body>
+</html>

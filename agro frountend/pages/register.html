@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register – AgroTECH</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a2e0d 0%, #1b5e20 50%, #2e7d32 100%);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .auth-wrapper {
+      width: 100%;
+      max-width: 540px;
+      padding-bottom: 2rem;
+    }
+
+    .auth-brand {
+      text-align: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .auth-brand h1 { font-size: 1.7rem; color: white; margin: 0; }
+    .auth-brand h1 span { color: #69f0ae; }
+    .auth-brand p { color: rgba(255,255,255,0.78); font-size: 0.88rem; margin-top: 4px; }
+
+    .auth-card {
+      background: rgba(255,255,255,0.98);
+      border-radius: var(--radius-xl);
+      padding: 2.25rem;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+      position: relative;
+    }
+
+    .card-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .step-indicator {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.4rem;
+    }
+    .step-dot {
+      flex: 1;
+      height: 5px;
+      border-radius: 3px;
+      background: var(--gray-200);
+      transition: all 0.3s ease;
+    }
+    .step-dot.active { background: var(--green-600); }
+    .step-dot.done { background: #2e7d32; }
+
+    .role-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 1.5rem;
+    }
+
+    .role-option {
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-md);
+      padding: 14px 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.25s ease;
+      background: white;
+    }
+
+    .role-option:hover {
+      border-color: var(--green-500);
+      background: #f1f8f3;
+    }
+
+    .role-option.selected {
+      border-color: var(--green-600);
+      background: var(--green-50);
+      box-shadow: 0 4px 14px rgba(46, 125, 50, 0.15);
+    }
+
+    .role-option .role-icon { font-size: 2rem; margin-bottom: 4px; }
+    .role-option .role-title { font-weight: 700; font-size: 0.95rem; color: var(--gray-800); }
+    .role-option .role-desc { font-size: 0.74rem; color: var(--gray-500); margin-top: 3px; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media(max-width: 480px) {
+      .form-row { grid-template-columns: 1fr; }
+      .role-selector { grid-template-columns: 1fr; }
+      .auth-card { padding: 1.5rem; }
+    }
+
+    /* Step 2: Dedicated OTP Screen */
+    .otp-container {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .otp-banner {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+
+    .otp-banner .email-badge {
+      font-weight: 700;
+      color: #166534;
+      word-break: break-all;
+    }
+
+    .otp-input-wrapper {
+      margin: 1.5rem 0 1rem 0;
+      text-align: center;
+    }
+
+    .otp-input-field {
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+      height: 58px;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 14px;
+      text-align: center;
+      border: 2px solid var(--green-600);
+      border-radius: 12px;
+      background: #fafafa;
+      color: #1b5e20;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .otp-input-field:focus {
+      outline: none;
+      border-color: #1b5e20;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.2);
+    }
+
+    .timer-and-resend {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--gray-200);
+      font-size: 0.88rem;
+    }
+
+    .otp-timer {
+      color: var(--gray-600);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .otp-timer.expired {
+      color: #dc2626;
+    }
+
+    .resend-btn {
+      background: none;
+      border: none;
+      color: var(--green-700);
+      font-weight: 700;
+      cursor: pointer;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .resend-btn:hover:not(:disabled) {
+      background: var(--green-50);
+      text-decoration: underline;
+    }
+
+    .resend-btn:disabled {
+      color: var(--gray-400);
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+
+    .dev-hint {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      color: #047857;
+      background: #ecfdf5;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      cursor: pointer;
+      border: 1px dashed #a7f3d0;
+    }
+
+    .back-btn {
+      background: none;
+      border: 1px solid var(--gray-300);
+      color: var(--gray-700);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      background: var(--gray-100);
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.4rem;
+      font-size: 0.88rem;
+      color: var(--gray-600);
+    }
+    .auth-footer a { color: var(--green-700); font-weight: 700; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-brand">
+      <h1>🌱 Agro<span>TECH</span></h1>
+      <p data-i18n="app.tagline">Smart Agricultural Platform</p>
+    </div>
+
+    <div class="auth-card">
+      <div class="card-top-bar">
+        <div>
+          <h2 id="cardTitle" style="font-size:1.35rem;color:var(--green-900);margin:0" data-i18n="auth.register_title">Create Account</h2>
+          <p id="cardSubtitle" style="color:var(--gray-500);font-size:0.84rem;margin-top:3px" data-i18n="auth.register_subtitle">Choose your role to get started</p>
+        </div>
+        <div id="langToggleHolder"></div>
+      </div>
+
+      <!-- Step Indicator -->
+      <div class="step-indicator">
+        <div class="step-dot active" id="dotStep1" title="Step 1: Details"></div>
+        <div class="step-dot" id="dotStep2" title="Step 2: OTP Verification"></div>
+      </div>
+
+      <!-- ==================== STEP 1: REGISTRATION FORM ==================== -->
+      <div id="step1Container">
+        <!-- Role Selector -->
+        <label class="form-label" style="margin-bottom:8px" data-i18n="auth.select_role">Select Your Role *</label>
+        <div class="role-selector">
+          <div class="role-option selected" id="roleFarmer" onclick="selectRole('farmer')">
+            <div class="role-icon">🌾</div>
+            <div class="role-title" data-i18n="role.farmer">Farmer</div>
+            <div class="role-desc" data-i18n="auth.role_farmer_desc">Rent machinery & book services</div>
+          </div>
+          <div class="role-option" id="roleProvider" onclick="selectRole('provider')">
+            <div class="role-icon">🚜</div>
+            <div class="role-title" data-i18n="role.provider">Service Provider</div>
+            <div class="role-desc" data-i18n="auth.role_provider_desc">Offer equipment & machinery</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.full_name_label">Full Name *</label>
+            <input type="text" id="name" class="form-input" placeholder="e.g. Ramesh Patel" required autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.contact_label">Contact Number (10 digits) *</label>
+            <input type="tel" id="contact" class="form-input" placeholder="8127059442" maxlength="10" required autocomplete="tel">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth.email_label">Email Address *</label>
+          <input type="email" id="email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.password_label">Password *</label>
+            <input type="password" id="password" class="form-input" placeholder="Min 6 characters" required autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.confirm_pw_label">Confirm Password *</label>
+            <input type="password" id="confirmPw" class="form-input" placeholder="Re-enter password" required autocomplete="new-password">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth.address_label">Village / Town / District</label>
+          <input type="text" id="address" class="form-input" placeholder="e.g. Sector 4, Sanwer Road" autocomplete="address-line1">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.state_label">State</label>
+            <select id="state" class="form-select">
+              <option value="Madhya Pradesh">Madhya Pradesh</option>
+              <option value="Uttar Pradesh">Uttar Pradesh</option>
+              <option value="Maharashtra">Maharashtra</option>
+              <option value="Rajasthan">Rajasthan</option>
+              <option value="Punjab">Punjab</option>
+              <option value="Haryana">Haryana</option>
+              <option value="Gujarat">Gujarat</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="auth.pincode_label">Pincode</label>
+            <input type="text" id="pincode" class="form-input" placeholder="452001" maxlength="6" autocomplete="postal-code">
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-full btn-lg" onclick="sendOtp()" style="margin-top:8px" id="sendOtpBtn">
+          <span id="sendOtpBtnText" data-i18n="auth.send_otp_btn">Send Verification OTP →</span>
+        </button>
+      </div>
+
+      <!-- ==================== STEP 2: DEDICATED OTP VERIFICATION ==================== -->
+      <div id="step2Container" class="otp-container">
+        <div class="otp-banner">
+          <div style="font-size:1.8rem;margin-bottom:4px">✉️</div>
+          <div style="font-size:0.95rem;color:#1e3a1e;font-weight:700">Verification Code Sent</div>
+          <p style="font-size:0.84rem;color:#2e7d32;margin:4px 0 0 0">
+            We sent a 6-digit OTP code to: <br>
+            <span class="email-badge" id="displayEmail">user@example.com</span>
+          </p>
+        </div>
+
+        <div class="otp-input-wrapper">
+          <label class="form-label" style="text-align:center;font-weight:700;margin-bottom:8px">Enter 6-Digit Verification OTP</label>
+          <input type="text" id="otp" class="otp-input-field" placeholder="••••••" maxlength="6" inputmode="numeric" autocomplete="one-time-code">
+          <div id="devOtpBox" style="margin-top:10px;text-align:center">
+            <span class="dev-hint" onclick="useDevOtp()" id="devOtpText">💡 Dev Code: 123456 (Click to auto-fill)</span>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-full btn-lg" onclick="verifyOtpAndCreateAccount()" id="verifyBtn">
+          <span id="verifyBtnText">Verify OTP & Complete Registration →</span>
+        </button>
+
+        <div class="timer-and-resend">
+          <div class="otp-timer" id="timerDisplay">
+            ⏱️ OTP valid for: <span id="timeRemaining">15:00</span>
+          </div>
+          <button type="button" class="resend-btn" id="resendBtn" onclick="resendOtp()" disabled>
+            Resend OTP (<span id="resendCooldown">30</span>s)
+          </button>
+        </div>
+
+        <div style="margin-top:1.25rem;text-align:center">
+          <button type="button" class="back-btn" onclick="backToStep1()">
+            ← Edit Details / Change Email
+          </button>
+        </div>
+      </div>
+
+      <div class="auth-footer">
+        <span data-i18n="auth.have_account">Already have an account?</span> 
+        <a href="login.html" data-i18n="nav.login">Login here</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="global-toast" class="toast"></div>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/global.js"></script>
+  <script>
+    const STORAGE_KEY = 'agro_reg_flow';
+    let selectedRole = 'farmer';
+    let currentPayload = null;
+    let devCode = '123456';
+    let validityInterval = null;
+    let cooldownInterval = null;
+    let secondsLeft = 15 * 60; // 15 minutes
+    let resendCooldown = 30;   // 30 seconds
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const holder = document.getElementById('langToggleHolder');
+      if (holder && typeof AgroI18n !== 'undefined') {
+        holder.innerHTML = AgroI18n.renderLanguageToggle();
+      }
+
+      // Check URL query parameters (e.g. ?role=provider)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlRole = urlParams.get('role');
+      if (urlRole === 'provider' || urlRole === 'farmer') {
+        selectRole(urlRole);
+      }
+
+      // Enter key in OTP input triggers verification
+      const otpInput = document.getElementById('otp');
+      if (otpInput) {
+        otpInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            verifyOtpAndCreateAccount();
+          }
+        });
+        otpInput.addEventListener('input', () => {
+          otpInput.value = otpInput.value.replace(/\D/g, '').slice(0, 6);
+        });
+      }
+
+      // Enter key in Step 1 inputs triggers sendOtp
+      ['name', 'contact', 'email', 'password', 'confirmPw', 'address', 'pincode'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              sendOtp();
+            }
+          });
+        }
+      });
+
+      // Restore session if page was refreshed or Live Server reloaded
+      restorePendingRegistration();
+    });
+
+    function selectRole(role) {
+      selectedRole = role;
+      const f = document.getElementById('roleFarmer');
+      const p = document.getElementById('roleProvider');
+      if (f) f.classList.toggle('selected', role === 'farmer');
+      if (p) p.classList.toggle('selected', role === 'provider');
+    }
+
+    function restorePendingRegistration() {
+      const raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+
+      try {
+        const data = JSON.parse(raw);
+        const now = Date.now();
+        const remaining = Math.floor((data.expiresAt - now) / 1000);
+
+        if (remaining > 5 && data.payload && data.payload.email) {
+          currentPayload = data.payload;
+          selectedRole = data.role || data.payload.role || selectedRole;
+          selectRole(selectedRole);
+
+          // Restore form inputs in Step 1
+          if (document.getElementById('name')) document.getElementById('name').value = currentPayload.name || '';
+          if (document.getElementById('contact')) document.getElementById('contact').value = currentPayload.phone || '';
+          if (document.getElementById('email')) document.getElementById('email').value = currentPayload.email || '';
+          if (document.getElementById('password')) document.getElementById('password').value = currentPayload.password || '';
+          if (document.getElementById('confirmPw')) document.getElementById('confirmPw').value = currentPayload.password || '';
+
+          // Transition directly to Step 2
+          switchToStep2({ debug_otp: data.debug_otp, email: currentPayload.email }, remaining);
+        } else {
+          sessionStorage.removeItem(STORAGE_KEY);
+        }
+      } catch (_) {
+        sessionStorage.removeItem(STORAGE_KEY);
+      }
+    }
+
+    // Step 1: Validate Form and Send OTP
+    async function sendOtp() {
+      const name = document.getElementById('name').value.trim();
+      const contact = document.getElementById('contact').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPw = document.getElementById('confirmPw').value;
+      const state = document.getElementById('state').value;
+      const address = document.getElementById('address').value.trim();
+      const btn = document.getElementById('sendOtpBtn');
+      const btnText = document.getElementById('sendOtpBtnText');
+
+      if (!name || !contact || !email || !password) {
+        return showToast(AgroI18n.get('common.fill_required', 'Please fill in all required fields.'), 'error');
+      }
+      if (!/^\d{10}$/.test(contact)) {
+        return showToast('Contact must be a valid 10-digit number.', 'error');
+      }
+      if (!/\S+@\S+\.\S+/.test(email)) {
+        return showToast('Please enter a valid email address.', 'error');
+      }
+      if (password.length < 6) {
+        return showToast('Password must be at least 6 characters.', 'error');
+      }
+      if (password !== confirmPw) {
+        return showToast('Passwords do not match!', 'error');
+      }
+
+      currentPayload = {
+        name,
+        email,
+        phone: contact,
+        password,
+        location: (address || '') + (state ? ', ' + state : ''),
+        role: selectedRole
+      };
+
+      try {
+        btn.disabled = true;
+        btnText.textContent = 'Sending OTP... ⏳';
+
+        const res = await apiRegister(currentPayload);
+        btn.disabled = false;
+        btnText.textContent = AgroI18n.get('auth.send_otp_btn', 'Send Verification OTP →');
+
+        // Transition cleanly to Step 2 with full 15 minutes window
+        const windowSeconds = (res && res.expires_in_minutes) ? res.expires_in_minutes * 60 : 15 * 60;
+        switchToStep2(res, windowSeconds);
+
+        // Save state to sessionStorage so page reload NEVER loses the OTP screen
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+          payload: currentPayload,
+          role: selectedRole,
+          debug_otp: devCode,
+          expiresAt: Date.now() + windowSeconds * 1000
+        }));
+
+        showToast(res?.message || 'OTP sent! Please check your email.', 'success');
+      } catch (e) {
+        btn.disabled = false;
+        btnText.textContent = AgroI18n.get('auth.send_otp_btn', 'Send Verification OTP →');
+        showToast(e.message || 'Failed to send OTP. Please try again.', 'error');
+      }
+    }
+
+    function switchToStep2(res, totalSeconds = 15 * 60) {
+      document.getElementById('step1Container').style.display = 'none';
+      document.getElementById('step2Container').style.display = 'block';
+
+      // Update Top indicators
+      document.getElementById('dotStep1').className = 'step-dot done';
+      document.getElementById('dotStep2').className = 'step-dot active';
+      document.getElementById('cardTitle').textContent = 'Verify Your Email';
+      document.getElementById('cardSubtitle').textContent = 'Step 2: Enter the verification code';
+
+      // Display email
+      document.getElementById('displayEmail').textContent = currentPayload.email;
+
+      // Handle dev code if present
+      devCode = (res && res.debug_otp) ? res.debug_otp : '123456';
+      const devBox = document.getElementById('devOtpBox');
+      const devTxt = document.getElementById('devOtpText');
+      if (devBox && devTxt) {
+        devBox.style.display = 'block';
+        devTxt.textContent = `💡 Dev Code: ${devCode} (Click to auto-fill)`;
+      }
+
+      // Reset timer style
+      const timerDisplay = document.getElementById('timerDisplay');
+      if (timerDisplay) {
+        timerDisplay.className = 'otp-timer';
+        timerDisplay.innerHTML = '⏱️ OTP valid for: <span id="timeRemaining">15:00</span>';
+      }
+
+      // Clear input and focus
+      const otpInput = document.getElementById('otp');
+      if (otpInput) {
+        otpInput.value = '';
+        setTimeout(() => otpInput.focus(), 150);
+      }
+
+      // Start Countdown Timers
+      startValidityTimer(totalSeconds);
+      startResendCooldown(30);
+    }
+
+    function useDevOtp() {
+      const codeToUse = devCode || '123456';
+      const otpInput = document.getElementById('otp');
+      if (otpInput) {
+        otpInput.value = codeToUse;
+        otpInput.focus();
+        showToast(`Dev OTP ${codeToUse} filled!`, 'info');
+      }
+    }
+
+    function startValidityTimer(totalSeconds) {
+      clearInterval(validityInterval);
+      secondsLeft = Math.max(1, totalSeconds);
+      updateValidityTimerDisplay();
+
+      validityInterval = setInterval(() => {
+        secondsLeft--;
+        updateValidityTimerDisplay();
+
+        if (secondsLeft <= 0) {
+          clearInterval(validityInterval);
+          sessionStorage.removeItem(STORAGE_KEY);
+          const el = document.getElementById('timerDisplay');
+          if (el) {
+            el.className = 'otp-timer expired';
+            el.textContent = '⚠️ OTP Expired. Please click Resend OTP.';
+          }
+          const resendBtn = document.getElementById('resendBtn');
+          if (resendBtn) {
+            resendBtn.disabled = false;
+            resendBtn.textContent = '🔁 Resend OTP';
+          }
+        }
+      }, 1000);
+    }
+
+    function updateValidityTimerDisplay() {
+      const mins = Math.floor(secondsLeft / 60);
+      const secs = secondsLeft % 60;
+      const formatted = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      const el = document.getElementById('timeRemaining');
+      if (el) el.textContent = formatted;
+    }
+
+    function startResendCooldown(seconds) {
+      clearInterval(cooldownInterval);
+      resendCooldown = seconds;
+      const resendBtn = document.getElementById('resendBtn');
+      if (!resendBtn) return;
+      resendBtn.disabled = true;
+
+      cooldownInterval = setInterval(() => {
+        resendCooldown--;
+        if (resendCooldown <= 0) {
+          clearInterval(cooldownInterval);
+          resendBtn.disabled = false;
+          resendBtn.textContent = '🔁 Resend OTP';
+        } else {
+          resendBtn.textContent = `Resend OTP (${resendCooldown}s)`;
+        }
+      }, 1000);
+    }
+
+    async function resendOtp() {
+      if (!currentPayload || !currentPayload.email) {
+        return showToast('Please fill out the registration form.', 'error');
+      }
+
+      const resendBtn = document.getElementById('resendBtn');
+      if (resendBtn) {
+        resendBtn.disabled = true;
+        resendBtn.textContent = 'Sending fresh OTP...';
+      }
+
+      try {
+        let res;
+        if (typeof apiResendRegisterOtp === 'function') {
+          res = await apiResendRegisterOtp(currentPayload.email);
+        } else {
+          res = await apiRegister(currentPayload);
+        }
+
+        devCode = (res && res.debug_otp) ? res.debug_otp : '123456';
+        const devTxt = document.getElementById('devOtpText');
+        if (devTxt) devTxt.textContent = `💡 Dev Code: ${devCode} (Click to auto-fill)`;
+
+        const windowSeconds = (res && res.expires_in_minutes) ? res.expires_in_minutes * 60 : 15 * 60;
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+          payload: currentPayload,
+          role: selectedRole,
+          debug_otp: devCode,
+          expiresAt: Date.now() + windowSeconds * 1000
+        }));
+
+        showToast(res?.message || 'New OTP has been sent to your email!', 'success');
+        startValidityTimer(windowSeconds);
+        startResendCooldown(30);
+      } catch (e) {
+        showToast(e.message || 'Failed to resend OTP.', 'error');
+        if (resendBtn) {
+          resendBtn.disabled = false;
+          resendBtn.textContent = '🔁 Resend OTP';
+        }
+      }
+    }
+
+    function backToStep1() {
+      clearInterval(validityInterval);
+      clearInterval(cooldownInterval);
+      sessionStorage.removeItem(STORAGE_KEY);
+
+      document.getElementById('step2Container').style.display = 'none';
+      document.getElementById('step1Container').style.display = 'block';
+
+      document.getElementById('dotStep1').className = 'step-dot active';
+      document.getElementById('dotStep2').className = 'step-dot';
+      document.getElementById('cardTitle').textContent = 'Create Account';
+      document.getElementById('cardSubtitle').textContent = 'Choose your role to get started';
+    }
+
+    async function verifyOtpAndCreateAccount() {
+      const otpInput = document.getElementById('otp');
+      const otp = otpInput ? otpInput.value.trim() : '';
+      const verifyBtn = document.getElementById('verifyBtn');
+      const verifyBtnText = document.getElementById('verifyBtnText');
+
+      if (!otp) {
+        return showToast('Please enter the 6-digit OTP.', 'error');
+      }
+      if (otp.length < 4) {
+        return showToast('Please enter the complete OTP.', 'error');
+      }
+
+      try {
+        if (verifyBtn) verifyBtn.disabled = true;
+        if (verifyBtnText) verifyBtnText.textContent = 'Verifying... ⏳';
+
+        const res = await apiVerifyRegisterOtp(currentPayload.email, otp);
+
+        clearInterval(validityInterval);
+        clearInterval(cooldownInterval);
+        sessionStorage.removeItem(STORAGE_KEY);
+
+        showToast('Account verified and created successfully! Welcome 🌱', 'success');
+
+        setTimeout(() => {
+          if (selectedRole === 'provider') {
+            window.location.href = 'provider-dashboard.html';
+          } else {
+            window.location.href = 'home.html';
+          }
+        }, 900);
+      } catch (e) {
+        if (verifyBtn) verifyBtn.disabled = false;
+        if (verifyBtnText) verifyBtnText.textContent = 'Verify OTP & Complete Registration →';
+        showToast(e.message || 'Invalid OTP. Please check the code and try again.', 'error');
+      }
+    }
+  </script>
+</body>
+</html>
